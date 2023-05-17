@@ -1,4 +1,4 @@
-package dev.gerlot.library;
+package dev.gerlot.systembarcolorist;
 
 import android.content.Context;
 
@@ -19,8 +19,7 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("dev.gerlot.library.test", appContext.getPackageName());
+        final Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("dev.gerlot.systembarcolorist.test", appContext.getPackageName());
     }
 }
