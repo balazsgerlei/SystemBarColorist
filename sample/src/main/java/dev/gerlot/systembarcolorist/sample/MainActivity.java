@@ -10,28 +10,34 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import dev.gerlot.systembarcolorist.SystemBarColorist;
+import dev.gerlot.systembarcolorist.sample.databinding.MainActivityBinding;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MainActivityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-        final View backgroundView = ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
-        if (backgroundView != null) {
-            final String topColorString = "#FFCCCCCC";
-            final int topColorInt = Color.parseColor(topColorString);
-            final Button topColorButton = findViewById(R.id.topColorButton);
-            topColorButton.setText(topColorString);
-            final String bottomColorString = "#FF0000FF";
-            final int bottomColorInt = Color.parseColor(bottomColorString);
-            final Button bottomColorButton = findViewById(R.id.bottomColorButton);
-            bottomColorButton.setText(bottomColorString);
-            final GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] { topColorInt, bottomColorInt });
-            gd.setCornerRadius(0f);
-            backgroundView.setBackground(gd);
-            SystemBarColorist.colorSystemBarsOfWindow(getWindow(), topColorInt, bottomColorInt);
-        }
+        binding = MainActivityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        final String topColorString = "#FFCCCCCC";
+        final int topColorInt = Color.parseColor(topColorString);
+        binding.topColorButton.setText(topColorString);
+        binding.topColorButton.setOnClickListener(v -> {
+            // TODO
+        });
+        final String bottomColorString = "#FF0000FF";
+        final int bottomColorInt = Color.parseColor(bottomColorString);
+        binding.bottomColorButton.setText(bottomColorString);
+        binding.bottomColorButton.setOnClickListener(v -> {
+            // TODO
+        });
+
+        final GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] { topColorInt, bottomColorInt });
+        gd.setCornerRadius(0f);
+        binding.getRoot().setBackground(gd);
+        SystemBarColorist.colorSystemBarsOfWindow(getWindow(), topColorInt, bottomColorInt);
     }
 
 }
