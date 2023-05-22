@@ -3,6 +3,7 @@ package dev.gerlot.systembarcolorist.sample;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivityBinding binding;
 
+
+    public static final String KEY_TOP_COLOR = "top_color";
+    public static final String KEY_BOTTOM_COLOR = "bottom_color";
     private final String INITIAL_TOP_COLOR_STRING = "#FFCCCCCC";
     private final String INITIAL_BOTTOM_COLOR_STRING = "#FF0000FF";
 
@@ -26,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = MainActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        if (savedInstanceState != null) {
+            final int savedTopColor = savedInstanceState.getInt(KEY_TOP_COLOR, -1);
+            if (savedTopColor != -1) {
+                topColor = savedTopColor;
+            }
+            final int savedBottomColor = savedInstanceState.getInt(KEY_BOTTOM_COLOR, -1);
+            if (savedBottomColor != -1) {
+                bottomColor = savedBottomColor;
+            }
+        }
 
         getSupportFragmentManager().setFragmentResultListener(ColorPickerFragment.REQUEST_KEY_TOP_COLOR, this, (requestKey, bundle) -> {
             topColor = bundle.getInt(ColorPickerFragment.RESULT_COLOR);
@@ -49,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setGradientBackground(topColor, bottomColor);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_TOP_COLOR, topColor);
+        outState.putInt(KEY_BOTTOM_COLOR, bottomColor);
+        super.onSaveInstanceState(outState);
     }
 
     private void setGradientBackground(final int topColorInt, final int bottomColorInt) {

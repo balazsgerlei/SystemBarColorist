@@ -27,6 +27,8 @@ public class ColorPickerFragment extends DialogFragment {
 
     private static final String ARG_REQUEST_KEY = "request_key";
     private static final String ARG_COLOR = "color";
+    private static final String KEY_REQUEST_KEY = "request_key";
+    private static final String KEY_COLOR = "color";
 
     private ColorPickerFragmentBinding binding;
 
@@ -48,7 +50,10 @@ public class ColorPickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        if (getArguments() != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_REQUEST_KEY) && savedInstanceState.containsKey(KEY_COLOR)) {
+            requestKey = savedInstanceState.getString(KEY_REQUEST_KEY);
+            color = savedInstanceState.getInt(KEY_COLOR);
+        } else if (getArguments() != null) {
             requestKey = getArguments().getString(ARG_REQUEST_KEY);
             color = getArguments().getInt(ARG_COLOR);
         }
@@ -68,7 +73,10 @@ public class ColorPickerFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_REQUEST_KEY) && savedInstanceState.containsKey(KEY_COLOR)) {
+            requestKey = savedInstanceState.getString(KEY_REQUEST_KEY);
+            color = savedInstanceState.getInt(KEY_COLOR);
+        } else if (getArguments() != null) {
             requestKey = getArguments().getString(ARG_REQUEST_KEY);
             color = getArguments().getInt(ARG_COLOR);
         }
@@ -142,6 +150,13 @@ public class ColorPickerFragment extends DialogFragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(KEY_REQUEST_KEY, requestKey);
+        outState.putInt(KEY_COLOR, color);
+        super.onSaveInstanceState(outState);
     }
 
     private void onColorChanged() {
