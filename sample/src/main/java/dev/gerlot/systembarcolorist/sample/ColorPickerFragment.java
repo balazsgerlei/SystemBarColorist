@@ -35,6 +35,25 @@ public class ColorPickerFragment extends DialogFragment {
     private String requestKey;
     private int color;
 
+    private final SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (fromUser) {
+                onColorChanged(binding.redSeekBar.getProgress(), binding.greenSeekBar.getProgress(), binding.blueSeekBar.getProgress());
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
+
     public ColorPickerFragment() {
     }
 
@@ -50,13 +69,6 @@ public class ColorPickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_REQUEST_KEY) && savedInstanceState.containsKey(KEY_COLOR)) {
-            requestKey = savedInstanceState.getString(KEY_REQUEST_KEY);
-            color = savedInstanceState.getInt(KEY_COLOR);
-        } else if (getArguments() != null) {
-            requestKey = getArguments().getString(ARG_REQUEST_KEY);
-            color = getArguments().getInt(ARG_COLOR);
-        }
         binding = ColorPickerFragmentBinding.inflate(requireActivity().getLayoutInflater());
         return new AlertDialog.Builder(requireContext())
                 .setView(binding.getRoot())
@@ -71,18 +83,6 @@ public class ColorPickerFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_REQUEST_KEY) && savedInstanceState.containsKey(KEY_COLOR)) {
-            requestKey = savedInstanceState.getString(KEY_REQUEST_KEY);
-            color = savedInstanceState.getInt(KEY_COLOR);
-        } else if (getArguments() != null) {
-            requestKey = getArguments().getString(ARG_REQUEST_KEY);
-            color = getArguments().getInt(ARG_COLOR);
-        }
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (binding == null) binding = ColorPickerFragmentBinding.inflate(inflater);
@@ -94,62 +94,34 @@ public class ColorPickerFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         binding.colorView.setBackgroundColor(color);
 
-        final int redValue = Color.red(color);
-        binding.redValueTextView.setText(Integer.toString(redValue));
-        binding.redSeekBar.setProgress(redValue);
-        binding.redSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    binding.redValueTextView.setText(Integer.toString(progress));
-                    onColorChanged();
-                }
-            }
+        binding.redSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        binding.greenSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        binding.blueSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        int colorFromBundle = -1;
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_REQUEST_KEY) && savedInstanceState.containsKey(KEY_COLOR)) {
+            requestKey = savedInstanceState.getString(KEY_REQUEST_KEY);
+            colorFromBundle = savedInstanceState.getInt(KEY_COLOR);
+        } else if (getArguments() != null) {
+            requestKey = getArguments().getString(ARG_REQUEST_KEY);
+            colorFromBundle = getArguments().getInt(ARG_COLOR);
+        }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+        if (colorFromBundle != -1) {
+            final int redValue = Color.red(colorFromBundle);
+            final int greenValue = Color.green(colorFromBundle);
+            final int blueValue = Color.blue(colorFromBundle);
 
-        final int greenValue = Color.green(color);
-        binding.greenValueTextView.setText(Integer.toString(greenValue));
-        binding.greenSeekBar.setProgress(greenValue);
-        binding.greenSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    binding.greenValueTextView.setText(Integer.toString(progress));
-                    onColorChanged();
-                }
-            }
+            binding.redSeekBar.setProgress(redValue);
+            binding.greenSeekBar.setProgress(greenValue);
+            binding.blueSeekBar.setProgress(blueValue);
+            onColorChanged(redValue, greenValue, blueValue);
+        }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        final int blueValue = Color.blue(color);
-        binding.blueValueTextView.setText(Integer.toString(blueValue));
-        binding.blueSeekBar.setProgress(blueValue);
-        binding.blueSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    binding.blueValueTextView.setText(Integer.toString(progress));
-                    onColorChanged();
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+        super.onViewStateRestored(savedInstanceState);
     }
 
     @Override
@@ -159,10 +131,10 @@ public class ColorPickerFragment extends DialogFragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void onColorChanged() {
-        final int redValue = binding.redSeekBar.getProgress();
-        final int greenValue = binding.greenSeekBar.getProgress();
-        final int blueValue = binding.blueSeekBar.getProgress();
+    private void onColorChanged(final int redValue, final int greenValue, final int blueValue) {
+        binding.blueValueTextView.setText(Integer.toString(redValue));
+        binding.greenValueTextView.setText(Integer.toString(greenValue));
+        binding.blueValueTextView.setText(Integer.toString(blueValue));
         color = Color.argb(255, redValue, greenValue, blueValue);
         binding.colorView.setBackgroundColor(color);
     }

@@ -8,6 +8,8 @@ import android.os.PersistableBundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.fragment.app.FragmentResultOwner;
+import androidx.lifecycle.LifecycleOwner;
 
 import dev.gerlot.systembarcolorist.SystemBarColorist;
 import dev.gerlot.systembarcolorist.sample.databinding.MainActivityBinding;
@@ -16,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivityBinding binding;
 
-
     public static final String KEY_TOP_COLOR = "top_color";
     public static final String KEY_BOTTOM_COLOR = "bottom_color";
     private final String INITIAL_TOP_COLOR_STRING = "#FFCCCCCC";
@@ -24,6 +25,18 @@ public class MainActivity extends AppCompatActivity {
 
     private int topColor = Color.parseColor(INITIAL_TOP_COLOR_STRING);
     private int bottomColor = Color.parseColor(INITIAL_BOTTOM_COLOR_STRING);
+
+    private final FragmentResultListener colorPickerFragmentResultListener = (requestKey, result) -> {
+        final int colorResult = result.getInt(ColorPickerFragment.RESULT_COLOR, -1);
+        if (colorResult != -1) {
+            if (ColorPickerFragment.REQUEST_KEY_TOP_COLOR.equals(requestKey)) {
+                topColor = colorResult;
+            } else if (ColorPickerFragment.REQUEST_KEY_BOTTOM_COLOR.equals(requestKey)) {
+                bottomColor = colorResult;
+            }
+            onColorsChanged(topColor, bottomColor);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,28 +55,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        getSupportFragmentManager().setFragmentResultListener(ColorPickerFragment.REQUEST_KEY_TOP_COLOR, this, (requestKey, bundle) -> {
-            topColor = bundle.getInt(ColorPickerFragment.RESULT_COLOR);
-            binding.topColorButton.setText("#" + Integer.toHexString(topColor));
-            setGradientBackground(topColor, bottomColor);
-        });
-        getSupportFragmentManager().setFragmentResultListener(ColorPickerFragment.REQUEST_KEY_BOTTOM_COLOR, this, (requestKey, bundle) -> {
-            bottomColor = bundle.getInt(ColorPickerFragment.RESULT_COLOR);
-            binding.bottomColorButton.setText("#" + Integer.toHexString(bottomColor));
-            setGradientBackground(topColor, bottomColor);
-        });
+        binding.topColorButton.setOnClickListener(v -> ColorPickerFragment.newInstance(ColorPickerFragment.REQUEST_KEY_TOP_COLOR, topColor).show(getSupportFragmentManager(), ColorPickerFragment.TAG));
+        binding.bottomColorButton.setOnClickListener(v -> ColorPickerFragment.newInstance(ColorPickerFragment.REQUEST_KEY_BOTTOM_COLOR, bottomColor).show(getSupportFragmentManager(), ColorPickerFragment.TAG));
 
+        onColorsChanged(topColor, bottomColor);
 
-        binding.topColorButton.setText("#" + Integer.toHexString(topColor));
-        binding.topColorButton.setOnClickListener(v -> {
-            ColorPickerFragment.newInstance(ColorPickerFragment.REQUEST_KEY_TOP_COLOR, topColor).show(getSupportFragmentManager(), ColorPickerFragment.TAG);
-        });
-        binding.bottomColorButton.setText("#" + Integer.toHexString(bottomColor));
-        binding.bottomColorButton.setOnClickListener(v -> {
-            ColorPickerFragment.newInstance(ColorPickerFragment.REQUEST_KEY_BOTTOM_COLOR, bottomColor).show(getSupportFragmentManager(), ColorPickerFragment.TAG);
-        });
-
-        setGradientBackground(topColor, bottomColor);
+        getSupportFragmentManager().setFragmentResultListener(ColorPickerFragment.REQUEST_KEY_TOP_COLOR, this, colorPickerFragmentResultListener);
+        getSupportFragmentManager().setFragmentResultListener(ColorPickerFragment.REQUEST_KEY_BOTTOM_COLOR, this, colorPickerFragmentResultListener);
     }
 
     @Override
@@ -71,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt(KEY_TOP_COLOR, topColor);
         outState.putInt(KEY_BOTTOM_COLOR, bottomColor);
         super.onSaveInstanceState(outState);
+    }
+
+    private void onColorsChanged(final int topColorInt, final int bottomColorInt) {
+        binding.topColorButton.setText("#" + Integer.toHexString(topColorInt));
+        binding.bottomColorButton.setText("#" + Integer.toHexString(bottomColorInt));
+        setGradientBackground(topColorInt, bottomColorInt);
     }
 
     private void setGradientBackground(final int topColorInt, final int bottomColorInt) {
