@@ -2,6 +2,7 @@
 [![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg)](https://android-arsenal.com/api?level=19)
 [![license](https://img.shields.io/github/license/balazsgerlei/SystemBarColorist)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![last commit](https://img.shields.io/github/last-commit/balazsgerlei/SystemBarColorist?color=018786)](https://github.com/balazsgerlei/SystemBarColorist/commits/main)
+[![build](https://img.shields.io/github/actions/workflow/status/balazsgerlei/SystemBarColorist/build.yml?branch=main&event=push)](https://github.com/balazsgerlei/SystemBarColorist/actions/workflows/build.yml)
 [![](https://jitpack.io/v/balazsgerlei/SystemBarColorist.svg)](https://jitpack.io/#balazsgerlei/SystemBarColorist)
 
 Set the color of Android status and navigation bars while also automatically applying light or dark font color.
