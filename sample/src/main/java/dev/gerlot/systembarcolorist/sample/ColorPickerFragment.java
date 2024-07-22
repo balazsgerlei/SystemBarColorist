@@ -132,7 +132,7 @@ public class ColorPickerFragment extends DialogFragment {
     }
 
     private void onColorChanged(final int redValue, final int greenValue, final int blueValue) {
-        binding.blueValueTextView.setText(Integer.toString(redValue));
+        binding.redValueTextView.setText(Integer.toString(redValue));
         binding.greenValueTextView.setText(Integer.toString(greenValue));
         binding.blueValueTextView.setText(Integer.toString(blueValue));
         color = Color.argb(255, redValue, greenValue, blueValue);
