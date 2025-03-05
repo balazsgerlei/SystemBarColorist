@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'dev.gerlot.systembarcolorist.sample'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "dev.gerlot.systembarcolorist.sample"
